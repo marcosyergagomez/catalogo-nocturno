@@ -1,0 +1,20 @@
+[project]
+name = "catalogo-nocturno"
+version = "0.1.0"
+description = "Pipeline batch de un catálogo de productos: de CSV a Postgres."
+requires-python = ">=3.12"
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
