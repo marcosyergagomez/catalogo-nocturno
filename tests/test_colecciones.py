@@ -1,16 +1,14 @@
-from practica.colecciones import sin_duplicados
+import pytest
+
+from practica.colecciones import agrupar_por, contar_por, sin_duplicados
 
 
-def test_lista_sin_repetidos():
-    assert sin_duplicados([3, 1, 3, 2, 1]) == [3, 1, 2]
-
-
-def test_lista_vacia():
-    assert sin_duplicados([]) == []
-
-
-def test_item_no_es_lista():
-    assert sin_duplicados(x % 3 for x in range(10)) == [0, 1, 2]
+@pytest.mark.parametrize(
+    "lista, resultado",
+    [([3, 1, 3, 2, 1], [3, 1, 2]), ([], []), ([x % 3 for x in range(10)], [0, 1, 2])],
+)
+def test_lista_sin_repetidos(lista, resultado):
+    assert sin_duplicados(lista) == resultado
 
 
 def test_misma_clave_de_texto():
@@ -24,3 +22,30 @@ def test_misma_clave_dentro_diccionario():
         {"id": 1, "v": "a"},
         {"id": 2, "v": "b"},
     ]
+
+
+ventas = [
+    {"ciudad": "Madrid", "importe": 10},
+    {"ciudad": "Bilbao", "importe": 5},
+    {"ciudad": "Madrid", "importe": 7},
+]
+
+
+@pytest.mark.parametrize(
+    "entrada, clave, resultado",
+    [
+        (ventas, lambda v: v["ciudad"], {"Madrid": 2, "Bilbao": 1}),
+        ([], len, {}),
+        (["ab", "c", "de"], len, {2: 2, 1: 1}),
+    ],
+)
+def test_contar_por(entrada, clave, resultado):
+    assert contar_por(entrada, clave) == resultado
+
+
+@pytest.mark.parametrize(
+    "entrada, clave, resultado",
+    [(ventas, lambda v: v["ciudad"], {"Madrid": [ventas[0], ventas[2]], "Bilbao": [ventas[1]]})],
+)
+def test_agrupar_por(entrada, clave, resultado):
+    assert agrupar_por(entrada, clave) == resultado
