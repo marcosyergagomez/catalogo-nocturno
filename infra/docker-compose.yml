@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: aulanorte-pg
+    environment:
+      POSTGRES_USER: aulanorte
+      POSTGRES_PASSWORD: aulanorte
+      POSTGRES_DB: aulanorte
+    ports:
+      - "5432:5432"
+    volumes:
+      - aulanorte_pg:/var/lib/postgresql/data
+volumes:
+  aulanorte_pg:
