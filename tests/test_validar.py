@@ -1,20 +1,21 @@
 from catalogo.validar import validar
 
 BASE = {
-    "sku": "A1",
-    "nombre": "Taza",
-    "precio_cents": "1200",
-    "actualizado_en": "2026-05-01",
+    "code": "549841",
+    "product_name": "Taza",
+    "brands": "Tazas Matias",
+    "last_modified_t": "20260501",
+    "nutriscore_grade": "B",
 }
 
 def test_fila_valida():
-    assert validar({**BASE, "sku": " a1 ", "nombre": " Taza "}) == (
-        {"sku": "A1", "nombre": "Taza", "precio_cents": 1200, "actualizado_en": "2026-05-01"},
+    assert validar({**BASE, "code": "549841", "product_name": "Taza", "brands": "Tazas Matias", "last_modified_t": "20260501", "nutriscore_grade": "B"}) == (
+        {"code": "549841", "product_name": "Taza", "brands": "Tazas Matias", "last_modified_t": 20260501, "nutriscore_grade": "B"},
         None,
     )
 
-def test_sku_vacio():
-    assert validar({**BASE, "sku": "  "}) == (None, "sku vacío")
+def test_code_vacio():
+    assert validar({**BASE, "code": "  "}) == (None, "code vacío")
 
-def test_precio_malo():
-    assert validar({**BASE, "precio_cents": "9.99"}) == (None, "precio no entero")
+def test_last_modified_t_malo():
+    assert validar({**BASE, "last_modified_t": "9.99"}) == (None, "La fecha no es entera")

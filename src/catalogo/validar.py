@@ -1,25 +1,25 @@
 from typing import Mapping, Any
 
 def validar(fila: Mapping[str, Any]) -> tuple[dict | None, str | None]:
-    sku = (fila.get("sku") or "").strip()
-    if not sku:
-        return (None,"sku vacío")
-    nombre = (fila.get("nombre") or "").strip()
-    if not nombre:
-        return(None, "nombre vacío")
-    precio_cents = fila.get("precio_cents")
-    if precio_cents is None:
-        return (None, "precio no entero")
-    if not precio_cents.strip().isdigit():
-        return (None, "precio no entero")
-    actualizado_en = (fila.get("actualizado_en") or "").strip()
-    if not actualizado_en:
-        return(None, "fecha vacía")
+    code = (fila.get("code") or "").strip()
+    if not code:
+        return (None,"code vacío")
+    product_name = (fila.get("product_name") or "").strip()
+    if not product_name:
+        return(None, "product_name vacío")
+    brands = (fila.get("brands") or "").strip()
+    last_modified_t = fila.get("last_modified_t")
+    if last_modified_t is None:
+        return (None, "La fecha esta vacia")
+    if not last_modified_t.strip().isdigit():
+        return (None, "La fecha no es entera")
+    nutriscore_grade = (fila.get("nutriscore_grade") or "").strip()
     limpio = {
-        "sku": fila.get("sku").strip().upper(),
-        "nombre": fila.get("nombre").strip(),
-        "precio_cents": int(fila.get("precio_cents").strip()),
-        "actualizado_en": fila.get("actualizado_en").strip()
+        "code": code,
+        "product_name": product_name,
+        "brands": brands,
+        "last_modified_t": int(fila.get("last_modified_t").strip()),
+        "nutriscore_grade": nutriscore_grade
     }
     return (limpio,None)
 
