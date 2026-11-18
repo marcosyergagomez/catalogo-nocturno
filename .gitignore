@@ -5,3 +5,7 @@ __pycache__/
 .ruff_cache/
 .env
 .ipynb_checkpoints/
+
+# Export real de Open Food Facts (demasiado grande para git)
+data/raw/*
+!data/raw/.gitkeep
