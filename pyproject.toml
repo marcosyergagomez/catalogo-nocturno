@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Pipeline batch de un catálogo de productos: de CSV a Postgres."
 requires-python = ">=3.12"
 
+dependencies = ["psycopg[binary]>=3.2"]
+
 [project.optional-dependencies]
 dev = ["pytest>=8", "ruff>=0.6"]
 
