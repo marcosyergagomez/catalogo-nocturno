@@ -52,6 +52,7 @@ def test_pipeline_primera_carga_y_idempotencia(conn, muestra_gz, tmp_path):
     ruta_q = tmp_path / "cuarentena.jsonl"
 
     primera = pipeline(muestra_gz, conn, ruta_q, tamano_lote=2)
+    assert primera.duracion_s > 0
     assert primera == Metricas(
         leidas=4,
         validas=2,
@@ -59,6 +60,7 @@ def test_pipeline_primera_carga_y_idempotencia(conn, muestra_gz, tmp_path):
         filtradas=1,
         escritas=2,
         lotes=1,
+        duracion_s=primera.duracion_s,
     )
 
     filas = conn.execute(
@@ -82,3 +84,4 @@ def test_pipeline_primera_carga_y_idempotencia(conn, muestra_gz, tmp_path):
     assert segunda.escritas == 0
     assert segunda.validas == 2
     assert segunda.leidas == 4
+    assert segunda.duracion_s > 0

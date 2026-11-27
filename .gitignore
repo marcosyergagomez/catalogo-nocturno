@@ -6,6 +6,7 @@ __pycache__/
 *.egg-info/
 .env
 .ipynb_checkpoints/
+cuarentena/
 
 # Export real de Open Food Facts (demasiado grande para git)
 data/raw/*
