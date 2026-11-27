@@ -1,10 +1,16 @@
+import os
+import logging
 from catalogo.extraer import leer_tsv_gz
 from catalogo.validar import validar
 from catalogo.cuarentena import escribir_cuarentena
 from catalogo.cargar import cargar_lote
 from practica.lotes import lotes
 from dataclasses import dataclass
+from catalogo.config import cargar_config
+from catalogo.logs import configurar_logs
+import time
 import psycopg
+
 
 @dataclass
 class Metricas:
@@ -14,11 +20,12 @@ class Metricas:
     escritas: int = 0
     lotes: int = 0
     filtradas: int = 0
-
+    duracion_s: float = 0
 
 
 def pipeline(ruta,conn,ruta_cuarentena, tamano_lote):
     metricas = Metricas()
+    inicio = time.perf_counter()
     filas = leer_tsv_gz(ruta)
     validas = []
     rechazadas = []
@@ -42,10 +49,12 @@ def pipeline(ruta,conn,ruta_cuarentena, tamano_lote):
         cargados = cargar_lote(conn, lote)
         metricas.escritas += cargados
 
-
+    segundos = time.perf_counter() - inicio
+    metricas.duracion_s = segundos
     return metricas
 
 if __name__ == "__main__":
-    DSN = "postgresql://aulanorte:aulanorte@localhost:5432/aulanorte"
-    with psycopg.connect(DSN) as conn:
-        pipeline("data/raw/muestra.tsv.gz", conn, "data/cuarentena.jsonl", 10)
+    config = cargar_config(os.environ)
+    configurar_logs(config)
+    with psycopg.connect(config.dsn) as conn:
+        pipeline("data/raw/muestra.tsv.gz", conn, config.carpeta_cuarentena / "cuarentena.jsonl", config.tamano_lote)

@@ -25,13 +25,16 @@ La tabla `productos` tiene `code` (clave primaria), `product_name`, `brands`, `l
 - `src/catalogo/validar.py`: reglas de arriba.
 - `src/catalogo/cuarentena.py`: JSONL con la fila y el motivo.
 - `src/catalogo/cargar.py`: upsert por lotes, una transacción por lote.
-- `src/catalogo/pipeline.py`: une las piezas y devuelve métricas (`leidas`, `filtradas`, `validas`, `rechazadas`, `escritas`, `lotes`).
+- `src/catalogo/pipeline.py`: une las piezas y devuelve métricas (`leidas`, `filtradas`, `validas`, `rechazadas`, `escritas`, `lotes`, `duracion_s`).
+- `src/catalogo/config.py`: `Config` y `cargar_config` leen el entorno y fallan al arrancar si falta el DSN.
+- `src/catalogo/logs.py`: nivel de log desde la configuración.
+- `src/catalogo/cli.py`: `catalogo run --fichero ... --fecha ...`. Métricas en JSON por stdout, logs por stderr.
 - `sql/001_crear_productos.sql` y Postgres 16 en `infra/docker-compose.yml`.
-- Tests de extracción, validación, carga, idempotencia del pipeline y los ejercicios de `src/practica/`.
+- Tests de extracción, validación, carga, idempotencia del pipeline, configuración, logs, la CLI y los ejercicios de `src/practica/`.
 
 ## Qué falta
 
-El arranque (`python -m catalogo.pipeline`) todavía lleva el DSN escrito en el código. No hay comando `catalogo run`, ni logs al ejecutar, ni integración continua. La muestra real del export no se sube a Git: hay que colocarla en `data/raw/`.
+Integración continua. La muestra real del export no se sube a Git: hay que colocarla en `data/raw/`. `--fecha` se valida y queda en el log; todavía no filtra filas.
 
 ## Cómo ejecutarlo
 
@@ -44,13 +47,14 @@ pip install -e ".[dev]"
 docker compose -f infra/docker-compose.yml up -d
 ```
 
-Hace falta un `data/raw/muestra.tsv.gz`. El bloque `__main__` de `src/catalogo/pipeline.py` llama a:
+Hace falta un `data/raw/muestra.tsv.gz`. La base local es `postgresql://aulanorte:aulanorte@localhost:5432/aulanorte`, usuario y base `aulanorte`, puerto 5432. Copia `.env.example` a `.env` (no se sube a Git) o exporta las variables en la shell:
 
-```text
-pipeline("data/raw/muestra.tsv.gz", conn, "data/cuarentena.jsonl", 10)
+```powershell
+$env:CATALOGO_DSN = "postgresql://aulanorte:aulanorte@localhost:5432/aulanorte"
+catalogo run --fichero data/raw/muestra.tsv.gz --fecha 2026-11-27
 ```
 
-La base local es `postgresql://aulanorte:aulanorte@localhost:5432/aulanorte`, usuario y base `aulanorte`, puerto 5432.
+La salida estándar es un JSON con las métricas. Los logs van a la salida de error. Sin `CATALOGO_DSN` el proceso sale con código 1. Si falta `--fecha`, argparse sale con código 2. La segunda pasada del mismo fichero deja `escritas` en 0.
 
 ```bash
 pytest
